@@ -14,9 +14,8 @@ jobs:
       - name: Write Commit SHAs to File
         run: |
           for sha in "${{ github.event.commits.*.sha }}"; do
-            echo "$sha" >> commit_shas.txt
+            echo "$sha"
           done
-          cat commit_shas.txt
       - name: Get commit SHA
         run: |
           ls -al
