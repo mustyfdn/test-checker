@@ -1,4 +1,4 @@
-name: PR Checks
+name: Commit Check
 
 on:
   pull_request:
@@ -6,21 +6,34 @@ on:
       - main
 
 jobs:
-  build:
+  check_commits:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Write Commit SHAs to File
-        run: |
-          echo "${{ github.event.size }}"
-      - name: Get commit SHA
-        run: |
-          ls -al
-          whoami
-          pwd
-          echo "${{ github.event.before }}"
-          git rev-parse HEAD
-          git branch --contains HEAD | grep -q "test"
-          echo $?
 
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Check Test Branch for Commits
+        run: |
+          git fetch origin test
+          for commit in $(git log --format="%H" origin/test..HEAD); do
+            git merge-base --is-ancestor $commit HEAD
+            if [ $? -ne 0 ]; then
+              echo "Commit $commit not found in test branch."
+              exit 1
+            fi
+          done
+
+      - name: Check Preprod Branch for Commits
+        run: |
+          git fetch origin preprod
+          for commit in $(git log --format="%H" origin/preprod..HEAD); do
+            git merge-base --is-ancestor $commit HEAD
+            if [ $? -ne 0 ]; then
+              echo "Commit $commit not found in preprod branch."
+              exit 1
+            fi
+          done
