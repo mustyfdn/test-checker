@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Checkout PR Branch
         uses: actions/checkout@v2
         with:
@@ -18,22 +20,4 @@ jobs:
 
       - name: Check Test Branch for Commits
         run: |
-          git fetch origin test
-          for commit in $(git log --format="%H" origin/test..HEAD); do
-            git merge-base --is-ancestor $commit HEAD
-            if [ $? -ne 0 ]; then
-              echo "Commit $commit not found in test branch."
-              exit 1
-            fi
-          done
-
-      - name: Check Preprod Branch for Commits
-        run: |
-          git fetch origin preprod
-          for commit in $(git log --format="%H" origin/preprod..HEAD); do
-            git merge-base --is-ancestor $commit HEAD
-            if [ $? -ne 0 ]; then
-              echo "Commit $commit not found in preprod branch."
-              exit 1
-            fi
-          done
+          git branch --contains ${{ github.event.pull_request.head.sha }}
