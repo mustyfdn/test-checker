@@ -1,4 +1,4 @@
-name: PR Checks
+name: Commit Check
 
 on:
   pull_request:
@@ -6,12 +6,20 @@ on:
       - main
 
 jobs:
-  build:
+  check_commits:
     runs-on: ubuntu-latest
-    steps:
-      - name: Get commit SHA
-        run: |
-          echo "${{ github.event.before }}"
-          git branch --contains ${{ github.event.before }} | grep -q "test"
-          echo $?
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Checkout PR Branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Check Test Branch for Commits
+        run: |
+          git fetch origin test
+          git fetch origin preprod
+          git branch --contains ${{ github.event.pull_request.head.sha }} | grep test
