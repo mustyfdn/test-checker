@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Get commit SHA
         run: |
+          ls -al
+          whoami
+          pwd
           echo "${{ github.event.before }}"
           git branch --contains ${{ github.event.before }} | grep -q "test"
           echo $?
