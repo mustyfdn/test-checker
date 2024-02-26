@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Write Commit SHAs to File
         run: |
-          for sha in "${{ github.event.commits.*.sha }}"; do
+          for sha in "${{ github.event.commits.[*].sha }}"; do
             echo "$sha"
           done
       - name: Get commit SHA
