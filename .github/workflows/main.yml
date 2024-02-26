@@ -17,6 +17,7 @@ jobs:
           whoami
           pwd
           echo "${{ github.event.before }}"
-          git branch --contains ${{ github.event.before }} | grep -q "test"
+          git rev-parse HEAD
+          git branch --contains HEAD | grep -q "test"
           echo $?
 
