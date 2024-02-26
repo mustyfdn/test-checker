@@ -2,39 +2,16 @@ name: PR Checks
 
 on:
   pull_request:
-    branches-ignore:
+    branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      # Test ve preprod branch'lerini fetch etme
-      - name: Fetch test branch
-        run: git fetch origin test
-
-      - name: Fetch preprod branch
-        run: git fetch origin preprod
-
-      # Test ve preprod branch'lerini karşılaştırma
-      - name: Check test branch
+      - name: Get commit SHA
         run: |
-          if git branch --contains ${{ github.event.before }} | grep -q "test"; then
-            echo "Commit exists in test branch"
-          else
-            echo "Commit does not exist in test branch"
-            exit 1
-          fi
+          echo "${{ github.event.before }}"
+          git branch --contains ${{ github.event.before }} | grep -q "test"
+          echo $?
 
-      - name: Check preprod branch
-        run: |
-          if git branch --contains ${{ github.event.before }} | grep -q "preprod"; then
-            echo "Commit exists in preprod branch"
-          else
-            echo "Commit does not exist in preprod branch"
-            exit 1
-          fi
