@@ -1,4 +1,4 @@
-name: Bugan Git Flow Checker
+name: Burgan Git Flow Checker
 
 on:
   pull_request:
